@@ -18,7 +18,6 @@ class HomeScreen extends StatelessWidget {
             tooltip: "Log out",
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              // StreamBuilder in main.dart will automatically redirect to LoginScreen
             },
           ),
         ],
