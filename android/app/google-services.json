@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "524126282608",
+    "project_id": "kid-wellness-tracker",
+    "storage_bucket": "kid-wellness-tracker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524126282608:android:baaf4963f512a06b7fe5b5",
+        "android_client_info": {
+          "package_name": "com.example.my_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuQxIYYdjnGAUjWj6y3qtcgv_BDYnVV4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
