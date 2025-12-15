@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.grey[100],
       ),
 
-      // 🌙 Dark theme
+      
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
