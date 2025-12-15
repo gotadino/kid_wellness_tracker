@@ -7,6 +7,7 @@ class Kid {
   final String? gender;
   final double? heightCm;
   final double? weightKg;
+  final double? bmi;
   final String? notes;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -18,6 +19,7 @@ class Kid {
     this.gender,
     this.heightCm,
     this.weightKg,
+    this.bmi,
     this.notes,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -27,10 +29,12 @@ class Kid {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'birthdate': birthdate != null ? Timestamp.fromDate(birthdate!) : null,
+      'birthdate':
+          birthdate != null ? Timestamp.fromDate(birthdate!) : null,
       'gender': gender,
       'heightCm': heightCm,
       'weightKg': weightKg,
+      'bmi': bmi,
       'notes': notes,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
@@ -39,7 +43,10 @@ class Kid {
 
   factory Kid.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
-    final Timestamp? tBirth = data['birthdate'] as Timestamp?;
+
+    Timestamp? tBirth = data['birthdate'] as Timestamp?;
+    Timestamp created = data['createdAt'] as Timestamp? ?? Timestamp.now();
+    Timestamp updated = data['updatedAt'] as Timestamp? ?? Timestamp.now();
 
     return Kid(
       id: doc.id,
@@ -48,11 +55,10 @@ class Kid {
       gender: data['gender'],
       heightCm: (data['heightCm'] as num?)?.toDouble(),
       weightKg: (data['weightKg'] as num?)?.toDouble(),
+      bmi: (data['bmi'] as num?)?.toDouble(),
       notes: data['notes'],
-      createdAt:
-          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt:
-          (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: created.toDate(),
+      updatedAt: updated.toDate(),
     );
   }
 }

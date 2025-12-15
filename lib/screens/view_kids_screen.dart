@@ -51,6 +51,21 @@ class _ViewKidsScreenState extends State<ViewKidsScreen> {
     }
   }
 
+  String _calculateBMI(double? kg, double? cm) {
+    if (kg == null || cm == null) return "—";
+    double bmi;
+    if (_isMetric) {
+      final m = cm / 100;
+      bmi = kg / (m * m);
+    } else {
+      // Convert to pounds/inches for US units
+      final inches = cm / 2.54;
+      final pounds = kg * 2.20462;
+      bmi = pounds / (inches * inches) * 703;
+    }
+    return bmi.toStringAsFixed(1);
+  }
+
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -72,14 +87,12 @@ class _ViewKidsScreenState extends State<ViewKidsScreen> {
           ),
         ],
       ),
-
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.pushNamed(context, "/addkid");
         },
       ),
-
       body: StreamBuilder<List<Kid>>(
         stream: _fs.streamKids(uid),
         builder: (context, snapshot) {
@@ -98,6 +111,7 @@ class _ViewKidsScreenState extends State<ViewKidsScreen> {
             itemBuilder: (context, index) {
               final kid = kids[index];
               final age = _calculateAge(kid.birthdate);
+              final bmi = _calculateBMI(kid.weightKg, kid.heightCm);
 
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -110,6 +124,7 @@ class _ViewKidsScreenState extends State<ViewKidsScreen> {
                       "Gender: ${kid.gender ?? '—'}\n"
                       "Height: ${_formatHeight(kid.heightCm)}\n"
                       "Weight: ${_formatWeight(kid.weightKg)}\n"
+                      "BMI: $bmi\n"
                       "Birthdate: ${_formatDate(kid.birthdate)}",
                     ),
                   ),

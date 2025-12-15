@@ -149,58 +149,63 @@ class _AddKidScreenState extends State<AddKidScreen> {
     );
   }
 
-  Future<void> _saveKid() async {
-    if (_nameController.text.trim().isEmpty) {
-      _showError("Please enter a name.");
+Future<void> _saveKid() async {
+  if (_nameController.text.trim().isEmpty) {
+    _showError("Please enter a name.");
+    return;
+  }
+
+  DateTime? birthdate;
+  if (_birthdateController.text.isNotEmpty) {
+    birthdate = DateTime.tryParse(_birthdateController.text);
+    if (birthdate == null) {
+      _showError("Invalid birthdate");
       return;
     }
-
-    DateTime? birthdate;
-    if (_birthdateController.text.isNotEmpty) {
-      birthdate = DateTime.tryParse(_birthdateController.text);
-      if (birthdate == null) {
-        _showError("Invalid birthdate");
-        return;
-      }
-    }
-
-    double? heightCm;
-    double? weightKg;
-
-    final h = double.tryParse(_heightController.text);
-    final w = double.tryParse(_weightController.text);
-
-    if (h != null) {
-      heightCm = _isMetric ? h : h * 2.54;
-    }
-    if (w != null) {
-      weightKg = _isMetric ? w : w * 0.453592;
-    }
-
-    setState(() => _saving = true);
-
-    try {
-      final user = FirebaseAuth.instance.currentUser!;
-      await FirestoreService().addKid(
-        user.uid,
-        Kid(
-          id: '',
-          name: _nameController.text.trim(),
-          birthdate: birthdate,
-          gender: _selectedGender,
-          heightCm: heightCm,
-          weightKg: weightKg,
-          notes: _notesController.text.trim(),
-        ),
-      );
-
-      if (mounted) Navigator.pop(context);
-    } catch (e) {
-      _showError(e.toString());
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
   }
+
+  double? heightCm;
+  double? weightKg;
+  double? bmi;
+
+  final h = double.tryParse(_heightController.text);
+  final w = double.tryParse(_weightController.text);
+
+  if (h != null) heightCm = _isMetric ? h : h * 2.54;
+  if (w != null) weightKg = _isMetric ? w : w * 0.453592;
+
+  // ✅ Calculate BMI if possible
+  if (heightCm != null && weightKg != null && heightCm > 0) {
+    final heightMeters = heightCm / 100;
+    bmi = weightKg / (heightMeters * heightMeters);
+  }
+
+  setState(() => _saving = true);
+
+  try {
+    final user = FirebaseAuth.instance.currentUser!;
+    await FirestoreService().addKid(
+      user.uid,
+      Kid(
+        id: '',
+        name: _nameController.text.trim(),
+        birthdate: birthdate,
+        gender: _selectedGender,
+        heightCm: heightCm,
+        weightKg: weightKg,
+        bmi: bmi,
+        notes: _notesController.text.trim(),
+      ),
+    );
+
+    if (mounted) Navigator.pop(context);
+  } catch (e) {
+    _showError(e.toString());
+  } finally {
+    if (mounted) setState(() => _saving = false);
+  }
+}
+
 
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
