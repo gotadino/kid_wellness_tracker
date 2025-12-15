@@ -3,14 +3,52 @@ import 'package:my_app/models/kid.dart';
 import 'package:my_app/services/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ViewKidsScreen extends StatelessWidget {
-  ViewKidsScreen({super.key});
+class ViewKidsScreen extends StatefulWidget {
+  const ViewKidsScreen({super.key});
 
+  @override
+  State<ViewKidsScreen> createState() => _ViewKidsScreenState();
+}
+
+class _ViewKidsScreenState extends State<ViewKidsScreen> {
   final FirestoreService _fs = FirestoreService();
+  bool _isMetric = true;
 
   String _formatDate(DateTime? date) {
     if (date == null) return "—";
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
+
+  int? _calculateAge(DateTime? birthdate) {
+    if (birthdate == null) return null;
+    final today = DateTime.now();
+    int age = today.year - birthdate.year;
+    if (today.month < birthdate.month ||
+        (today.month == birthdate.month && today.day < birthdate.day)) {
+      age--;
+    }
+    return age;
+  }
+
+  String _formatHeight(double? cm) {
+    if (cm == null) return "—";
+    if (_isMetric) {
+      return "${cm.toStringAsFixed(1)} cm";
+    } else {
+      final inches = cm / 2.54;
+      final feet = inches ~/ 12;
+      final remainingInches = (inches % 12).round();
+      return "$feet ft $remainingInches in";
+    }
+  }
+
+  String _formatWeight(double? kg) {
+    if (kg == null) return "—";
+    if (_isMetric) {
+      return "${kg.toStringAsFixed(1)} kg";
+    } else {
+      return "${(kg * 2.20462).toStringAsFixed(1)} lbs";
+    }
   }
 
   @override
@@ -18,7 +56,22 @@ class ViewKidsScreen extends StatelessWidget {
     final uid = FirebaseAuth.instance.currentUser!.uid;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Your Children")),
+      appBar: AppBar(
+        title: const Text("Your Children"),
+        actions: [
+          Row(
+            children: [
+              const Text("Metric"),
+              Switch(
+                value: !_isMetric,
+                onChanged: (v) => setState(() => _isMetric = !v),
+              ),
+              const Text("US"),
+              const SizedBox(width: 10),
+            ],
+          ),
+        ],
+      ),
 
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -40,20 +93,23 @@ class ViewKidsScreen extends StatelessWidget {
           }
 
           return ListView.builder(
+            padding: const EdgeInsets.only(bottom: 80),
             itemCount: kids.length,
             itemBuilder: (context, index) {
               final kid = kids[index];
+              final age = _calculateAge(kid.birthdate);
 
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: ListTile(
                   title: Text(kid.name, style: const TextStyle(fontSize: 18)),
                   subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 6),
                     child: Text(
+                      "Age: ${age ?? '—'}\n"
                       "Gender: ${kid.gender ?? '—'}\n"
-                      "Height: ${kid.heightCm?.toStringAsFixed(1) ?? '—'} cm\n"
-                      "Weight: ${kid.weightKg?.toStringAsFixed(1) ?? '—'} kg\n"
+                      "Height: ${_formatHeight(kid.heightCm)}\n"
+                      "Weight: ${_formatWeight(kid.weightKg)}\n"
                       "Birthdate: ${_formatDate(kid.birthdate)}",
                     ),
                   ),

@@ -8,6 +8,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
@@ -22,32 +24,112 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ElevatedButton(
-              onPressed: () {
+            Text(
+              "Hello${user?.email != null ? ',' : ''}",
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (user?.email != null)
+              Text(
+                user!.email!,
+                style: const TextStyle(color: Colors.grey),
+              ),
+
+            const SizedBox(height: 30),
+
+            _HomeCard(
+              icon: Icons.person_add,
+              title: "Add Child",
+              subtitle: "Create a new child profile",
+              onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => AddKidScreen()),
+                  MaterialPageRoute(builder: (_) => const AddKidScreen()),
                 );
               },
-              child: const Text("Add Child"),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            ElevatedButton(
-              onPressed: () {
+            _HomeCard(
+              icon: Icons.list_alt,
+              title: "View Children",
+              subtitle: "See and manage child profiles",
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => ViewKidsScreen()),
                 );
               },
-              child: const Text("View Children"),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HomeCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _HomeCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 26,
+                child: Icon(icon, size: 28),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
         ),
       ),
     );

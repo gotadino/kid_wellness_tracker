@@ -21,8 +21,8 @@ class Kid {
     this.notes,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : createdAt = createdAt ?? DateTime.now(),
-       updatedAt = updatedAt ?? DateTime.now();
+  })  : createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
     return {
@@ -39,9 +39,7 @@ class Kid {
 
   factory Kid.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
-    Timestamp? tBirth = data['birthdate'] as Timestamp?;
-    Timestamp created = data['createdAt'] as Timestamp? ?? Timestamp.now();
-    Timestamp updated = data['updatedAt'] as Timestamp? ?? Timestamp.now();
+    final Timestamp? tBirth = data['birthdate'] as Timestamp?;
 
     return Kid(
       id: doc.id,
@@ -51,29 +49,10 @@ class Kid {
       heightCm: (data['heightCm'] as num?)?.toDouble(),
       weightKg: (data['weightKg'] as num?)?.toDouble(),
       notes: data['notes'],
-      createdAt: created.toDate(),
-      updatedAt: updated.toDate(),
-    );
-  }
-
-  Kid copyWith({
-    String? name,
-    DateTime? birthdate,
-    String? gender,
-    double? heightCm,
-    double? weightKg,
-    String? notes,
-  }) {
-    return Kid(
-      id: id,
-      name: name ?? this.name,
-      birthdate: birthdate ?? this.birthdate,
-      gender: gender ?? this.gender,
-      heightCm: heightCm ?? this.heightCm,
-      weightKg: weightKg ?? this.weightKg,
-      notes: notes ?? this.notes,
-      createdAt: createdAt,
-      updatedAt: DateTime.now(),
+      createdAt:
+          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt:
+          (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 }

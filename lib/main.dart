@@ -12,9 +12,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } on UnsupportedError catch (_) {
-    // `firebase_options.dart` doesn't include options for this platform
-    // (e.g. Windows, macOS, Linux, or web). Fall back to default
-    // initialization so the app doesn't crash with "Configuration not found".
+    // Fallback for platforms without firebase_options
     await Firebase.initializeApp();
   }
 
@@ -28,6 +26,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
+      
+      themeMode: ThemeMode.system,
+
+      
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorSchemeSeed: Colors.blue,
+        scaffoldBackgroundColor: Colors.grey[100],
+      ),
+
+      // 🌙 Dark theme
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorSchemeSeed: Colors.blue,
+        scaffoldBackgroundColor: const Color(0xFF121212),
+      ),
+
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
