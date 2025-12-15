@@ -28,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: passwordController.text.trim(),
       );
 
-      // SUCCESS → go to home
+      
       if (mounted) {
         Navigator.pushReplacement(
           context,
