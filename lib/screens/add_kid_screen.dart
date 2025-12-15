@@ -68,7 +68,7 @@ class _AddKidScreenState extends State<AddKidScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Birthdate picker (NO formatter, NO lag)
+              
               TextField(
                 controller: _birthdateController,
                 readOnly: true,
